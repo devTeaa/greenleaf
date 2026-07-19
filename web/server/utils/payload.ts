@@ -8,7 +8,9 @@ export const pbFind = async <T>(
   params: { filter?: string; perPage?: number; sort?: string; fields?: string } = {},
 ): Promise<Paginated<T>> => {
   const config = useRuntimeConfig()
-  const url = new URL(`${config.public.payloadUrl}/api/collections/${collection}/records`)
+  // Server route — always use the private internal URL.
+  const base = (config.payloadUrl as string) || (config.public.payloadUrl as string)
+  const url = new URL(`${base}/api/collections/${collection}/records`)
   url.searchParams.set('perPage', String(params.perPage ?? 100))
   if (params.filter) url.searchParams.set('filter', params.filter)
   if (params.sort) url.searchParams.set('sort', params.sort)
@@ -18,7 +20,8 @@ export const pbFind = async <T>(
 
 export const pbFirst = async <T>(collection: string): Promise<T | null> => {
   const config = useRuntimeConfig()
-  const url = new URL(`${config.public.payloadUrl}/api/collections/${collection}/records`)
+  const base = (config.payloadUrl as string) || (config.public.payloadUrl as string)
+  const url = new URL(`${base}/api/collections/${collection}/records`)
   url.searchParams.set('perPage', '1')
   const res = await $fetch<{ items: T[] }>(url.toString())
   return res.items[0] ?? null

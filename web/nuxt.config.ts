@@ -48,8 +48,14 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Server-only — used by SSR + Nitro routes (sitemap source).
+    // Internal Docker network URL — the browser never sees this.
+    payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3052',
     public: {
-      payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3052',
+      // Browser — must be a publicly reachable URL the user's browser can hit
+      // for client-side navigation. Set NUXT_PUBLIC_PAYLOAD_URL in production
+      // to e.g. https://cms.greenleaf.example
+      payloadUrl: process.env.NUXT_PUBLIC_PAYLOAD_URL || process.env.PAYLOAD_URL || 'http://localhost:3052',
     },
   },
 
