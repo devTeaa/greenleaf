@@ -383,6 +383,10 @@ async function main() {
     `NGINX_HTTP_PORT=${nginxHttpPort}`,
     `NGINX_HTTPS_PORT=${nginxHttpsPort}`,
     '',
+    '# ----- Pocketbase build arch -----',
+    '# Most VPS = amd64, Apple Silicon local dev / ARM VPS = arm64',
+    `PB_ARCH=${process.arch === 'arm64' ? 'arm64' : 'amd64'}`,
+    '',
     '# ----- Internal (set automatically in docker-compose) -----',
     '# NUXT_PUBLIC_PAYLOAD_URL=http://cms:3001',
   ]

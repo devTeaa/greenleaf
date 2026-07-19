@@ -20,8 +20,11 @@ services:
     build:
       context: ./cms
       args:
-        # Set to arm64 for ARM hosts (Hetzner ARM, Apple Silicon, Graviton)
-        PB_ARCH: ${PB_ARCH:-arm64}
+        # PB_ARCH must match the host architecture.
+        # Most VPS (Linode, Hetzner AMD, DigitalOcean, AWS EC2 intel) → amd64
+        # Apple Silicon local dev, Hetzner CAX (ARM), AWS Graviton → arm64
+        # Override via .env.production: PB_ARCH=arm64
+        PB_ARCH: ${PB_ARCH:-amd64}
     container_name: ${COMPOSE_PROJECT_NAME:-greenleaf}-cms
     restart: unless-stopped
     ports:

@@ -13,10 +13,10 @@ sudo usermod -aG docker $USER
 newgrp docker  # pick up the new group without re-logging-in
 
 # Node 24 (needed for setup scripts and the Nuxt build)
-curl -fsSL https://fnm.vercel.app/install | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 source ~/.bashrc  # or: exec $SHELL
-fnm install 24
-fnm default 24
+nvm install 24
+nvm alias default 24
 
 # pnpm
 corepack enable
@@ -33,7 +33,7 @@ cd greenleaf
 ## 3. Configure (interactive Q&A)
 
 ```bash
-fnm use
+nvm use
 pnpm install
 pnpm setup
 ```
