@@ -367,6 +367,8 @@ async function main() {
     '',
     '# ----- Storefront (Nuxt) -----',
     `NUXT_PUBLIC_SITE_URL=https://${domainValue}`,
+    '# Public CMS URL — the browser uses this for client-side navigation.',
+    `NUXT_PUBLIC_PAYLOAD_URL=https://${(cmsSubdomain as string).trim()}`,
     '',
     '# ----- CMS (Pocketbase) -----',
     `POCKETBASE_ADMIN_EMAIL=${config.adminEmail}`,

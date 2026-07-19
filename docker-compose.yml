@@ -46,13 +46,14 @@ services:
     ports:
       # Host bind:port → container 3000. Default: 127.0.0.1:3051 (avoids conflicts with other apps on the VPS).
       - "${NUXT_BIND:-127.0.0.1}:${NUXT_PORT:-3051}:3000"
+    # env_file loads ALL values from .env.production into the container.
+    # The environment: block only sets values that are INTERNAL to Docker
+    # (must NOT be in .env.production — they'd be wrong outside Docker).
+    # DO NOT duplicate env_file values here — environment: overrides env_file.
     environment:
-      # Server-side fetches (SSR + Nitro): internal docker network URL.
-      # Must use NUXT_ prefix so Nuxt runtimeConfig picks it up at startup.
+      # Server-side only: internal Docker network URL for SSR + Nitro.
+      # The browser never sees this (it's not in runtimeConfig.public).
       NUXT_PAYLOAD_URL: http://cms:3001
-      # Client-side fetches (browser): public CMS URL via reverse proxy.
-      NUXT_PUBLIC_PAYLOAD_URL: ${NUXT_PUBLIC_PAYLOAD_URL:-https://greenleaf-cms.example}
-      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-https://greenleaf.example}
     env_file: .env.production
     depends_on:
       - cms
