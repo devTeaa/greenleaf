@@ -61,20 +61,6 @@ services:
     networks:
       - greenleaf
 
-  admin:
-    build:
-      context: ./cms
-      args:
-        VITE_PB_URL: ${NUXT_PUBLIC_PAYLOAD_URL:-http://localhost:3052}
-    container_name: ${COMPOSE_PROJECT_NAME:-greenleaf}-admin
-    restart: unless-stopped
-    ports:
-      - "${ADMIN_BIND:-127.0.0.1}:${ADMIN_PORT:-3053}:80"
-    depends_on:
-      - backend
-    networks:
-      - greenleaf
-
   # --------------------------------------------------------------------
   # Optional bundled Nginx. Only used with `--profile full`.
   # In SHARED mode (default), skip this and route via your own reverse proxy.
