@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "./pocketbase serve --http 127.0.0.1:3052 --origins=http://localhost:3051,http://localhost:3052",
+    "dev": "./pocketbase serve --http 127.0.0.1:3052 --origins=http://localhost:3051,http://localhost:3052,http://localhost:3053",
     "setup": "tsx scripts/setup-schema.ts",
     "seed": "tsx scripts/seed.ts",
     "setup-and-seed": "tsx scripts/setup-schema.ts && tsx scripts/seed.ts"
