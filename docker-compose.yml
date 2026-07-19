@@ -6,6 +6,7 @@
 #     Your existing reverse proxy (Nginx/Caddy/Traefik) routes:
 #       greenleaf.example       → 127.0.0.1:${NUXT_PORT:-3051}
 #       cms.greenleaf.example   → 127.0.0.1:${CMS_PORT:-3052}
+#       admin.greenleaf.example → 127.0.0.1:${ADMIN_PORT:-3053}
 #     Run:  docker compose up -d
 #
 #   STANDALONE — Greenleaf owns the whole VPS.
@@ -55,6 +56,20 @@ services:
       # The browser never sees this (it's not in runtimeConfig.public).
       NUXT_PAYLOAD_URL: http://cms:3001
     env_file: .env.production
+    depends_on:
+      - cms
+    networks:
+      - greenleaf
+
+  admin:
+    build:
+      context: ./admin
+      args:
+        VITE_PB_URL: ${NUXT_PUBLIC_PAYLOAD_URL:-http://localhost:3052}
+    container_name: ${COMPOSE_PROJECT_NAME:-greenleaf}-admin
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_BIND:-127.0.0.1}:${ADMIN_PORT:-3053}:80"
     depends_on:
       - cms
     networks:

@@ -1,0 +1,1 @@
+{"root":["./src/env.d.ts","./src/main.ts","./src/lib/pb.ts","./src/lib/router.ts","./src/app.vue","./src/layouts/adminlayout.vue","./src/views/categorieslist.vue","./src/views/categoryedit.vue","./src/views/dashboard.vue","./src/views/login.vue","./src/views/productedit.vue","./src/views/productslist.vue","./src/views/settings.vue"],"version":"5.9.3"}
