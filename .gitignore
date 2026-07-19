@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+.nuxt/
+dist/
+build/
+
+# Data
+.data/
+data/payload-db/
+data/payload-media/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Pocketbase runtime artifacts (downloaded/generated at deploy, never commit)
+cms/pocketbase
+cms/pb_data/
+cms/pb_migrations/*.js
+!cms/pb_migrations/.gitkeep
+
+# Env / secrets
+.env
+.env.local
+.env.production
+.env.*.local
+greenleaf.config.json
+
+# Logs
+*.log
+logs/
+nginx/logs/
+
+# SSL certs (keep folder via .gitkeep)
+nginx/certs/*
+!nginx/certs/.gitkeep
+nginx-sites/
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Test
+coverage/
+.playwright/

@@ -1,0 +1,6 @@
+packages: []
+onlyBuiltDependencies:
+  - esbuild
+ignoredBuiltDependencies: []
+allowBuilds:
+  esbuild: true

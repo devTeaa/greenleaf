@@ -1,0 +1,7 @@
+node_modules
+pnpm-lock.yaml
+pb_data
+pb_migrations
+*.log
+.DS_Store
+.env
