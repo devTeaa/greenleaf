@@ -1,12 +1,12 @@
-# Greenleaf CMS — Pocketbase
+# Greenleaf Backend — Pocketbase
 
-Single-binary CMS with admin UI, REST API, SQLite storage. Total runtime: ~40MB RAM.
+Single-binary backend with admin UI, REST API, SQLite storage. Total runtime: ~40MB RAM.
 
 ## Dev
 
 ```bash
 nvm use        # Node 24 (for tsx seed scripts)
-./pocketbase serve --http 127.0.0.1:3052 --origins=http://localhost:3051,http://localhost:3052
+./pocketbase serve --http 127.0.0.1:3052 --origins=http://localhost:3051,http://localhost:3052,http://localhost:3053
 ```
 
 - Admin UI: http://localhost:3052/_/
@@ -18,7 +18,7 @@ nvm use        # Node 24 (for tsx seed scripts)
    ```bash
    ./pocketbase superuser create admin@yourdomain.test <your-password>
    ```
-   Then put those credentials in `cms/.env`:
+   Then put those credentials in `backend/.env`:
    ```
    ADMIN_EMAIL=admin@yourdomain.test
    ADMIN_PASSWORD=<your-password>
@@ -37,7 +37,7 @@ nvm use        # Node 24 (for tsx seed scripts)
 
 ## Production (Docker)
 
-The Dockerfile downloads the Pocketbase binary at build time. ARM64 hosts pass `--build-arg PB_ARCH=arm64`. Data persists via the `payload-db` volume mounted at `/pb/pb_data`.
+The Dockerfile downloads the Pocketbase binary at build time. ARM64 hosts pass `--build-arg PB_ARCH=arm64`. Data persists via the `backend-db` volume mounted at `/pb/pb_data`.
 
 ## Collections
 

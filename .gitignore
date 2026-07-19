@@ -18,10 +18,10 @@ data/payload-media/
 *.db-shm
 
 # Pocketbase runtime artifacts (downloaded/generated at deploy, never commit)
-cms/pocketbase
-cms/pb_data/
-cms/pb_migrations/*.js
-!cms/pb_migrations/.gitkeep
+backend/pocketbase
+backend/pb_data/
+backend/pb_migrations/*.js
+!backend/pb_migrations/.gitkeep
 
 # Env / secrets
 .env

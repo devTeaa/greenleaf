@@ -26,7 +26,7 @@ type Paginated<T> = {
 
 export const usePayloadApi = () => {
   const config = useRuntimeConfig()
-  // Server-side renders use the private internal URL (e.g. http://cms:3001).
+  // Server-side renders use the private internal URL (e.g. http://backend:3001).
   // Client-side fetches use the public URL exposed via runtimeConfig.public.
   // This avoids leaking the internal Docker hostname to the browser.
   const base = import.meta.server

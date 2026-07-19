@@ -1,5 +1,5 @@
 packages:
-  - admin
+  - cms
   - web
 onlyBuiltDependencies:
   - esbuild

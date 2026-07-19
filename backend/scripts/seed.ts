@@ -7,7 +7,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   console.error('✗ ADMIN_EMAIL and ADMIN_PASSWORD env vars required.')
   console.error('  Create them via: ./pocketbase superuser create EMAIL PASS')
-  console.error('  Then put them in cms/.env (or export before running).')
+  console.error('  Then put them in backend/.env (or export before running).')
   process.exit(1)
 }
 

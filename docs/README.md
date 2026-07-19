@@ -11,20 +11,21 @@
 
 ### Shared VPS (default) — recommended when other apps already run on the VPS
 
-- The stack exposes Nuxt and Pocketbase on `127.0.0.1:3051` and `127.0.0.1:3052`
+- The stack exposes Nuxt, Pocketbase, and Admin on `127.0.0.1:3051`, `127.0.0.1:3052`, `127.0.0.1:3053`
 - Your existing Nginx (or Caddy / Traefik) routes:
-  - `greenleaf.example` → `127.0.0.1:3051`
-  - `cms.greenleaf.example` → `127.0.0.1:3052`
-- Ports are configurable via `.env.production` (`NUXT_PORT`, `CMS_PORT`)
+  - `greenleaf.example` → `127.0.0.1:3051` (storefront)
+  - `greenleaf.example/admin/` → `127.0.0.1:3053` (admin SPA)
+  - `greenleaf-backend.example` → `127.0.0.1:3052` (Pocketbase API)
+- Ports are configurable via `.env.production` (`NUXT_PORT`, `BACKEND_PORT`, `ADMIN_PORT`)
 
 ```bash
-docker compose up -d          # starts only cms + nuxt (no bundled nginx)
+docker compose up -d          # starts backend + nuxt + admin
 ```
 
 ### Standalone — Greenleaf owns the whole VPS
 
 - The stack includes a bundled Nginx that listens on 80/443 and routes between
-  Nuxt and Pocketbase internally.
+  Nuxt, Admin, and Pocketbase internally.
 - Use this only when nothing else on the VPS needs ports 80/443.
 
 ```bash
@@ -37,12 +38,12 @@ After `docker compose up -d`, run on the VPS:
 
 ```bash
 # Create admin user (use the email/password from .env.production)
-docker exec greenleaf-cms /pb/pocketbase superuser create \
+docker exec greenleaf-backend /pb/pocketbase superuser create \
   $(grep POCKETBASE_ADMIN_EMAIL .env.production | cut -d= -f2) \
   $(grep POCKETBASE_ADMIN_PASSWORD .env.production | cut -d= -f2)
 
 # Create Pocketbase schema (collections) + seed mock data
-cd cms
+cd backend
 pnpm install
 pnpm setup
 pnpm seed
@@ -59,7 +60,7 @@ Use certbot (Let's Encrypt) on the VPS:
 ```bash
 sudo certbot --nginx --expand \
   -d greenleaf.example \
-  -d cms.greenleaf.example
+  -d greenleaf-backend.example
 ```
 
 Or terminate TLS at Cloudflare (Full Strict mode) and skip certbot entirely — the

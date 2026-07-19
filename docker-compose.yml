@@ -1,12 +1,12 @@
-# Greenleaf production stack: Pocketbase CMS + Nuxt storefront (+ optional Nginx)
+# Greenleaf production stack: Pocketbase backend + Nuxt storefront (+ optional Nginx)
 #
 # Two deployment modes:
 #
 #   SHARED (default) — for VPS that hosts other apps alongside Greenleaf.
 #     Your existing reverse proxy (Nginx/Caddy/Traefik) routes:
-#       greenleaf.example       → 127.0.0.1:${NUXT_PORT:-3051}
-#       cms.greenleaf.example   → 127.0.0.1:${CMS_PORT:-3052}
-#       admin.greenleaf.example → 127.0.0.1:${ADMIN_PORT:-3053}
+#       greenleaf.example             → 127.0.0.1:${NUXT_PORT:-3051}
+#       greenleaf-backend.example     → 127.0.0.1:${BACKEND_PORT:-3052}
+#       greenleaf.example/admin/      → 127.0.0.1:${ADMIN_PORT:-3053}
 #     Run:  docker compose up -d
 #
 #   STANDALONE — Greenleaf owns the whole VPS.
@@ -14,29 +14,29 @@
 #     Run:  docker compose --profile full up -d
 #
 # All ports/binds are configurable via .env.production. Defaults bind to
-# 127.0.0.1 only — never expose Nuxt/CMS directly to the internet.
+# 127.0.0.1 only — never expose Nuxt/backend directly to the internet.
 
 services:
-  cms:
+  backend:
     build:
-      context: ./cms
+      context: ./backend
       args:
         # PB_ARCH must match the host architecture.
         # Most VPS (Linode, Hetzner AMD, DigitalOcean, AWS EC2 intel) → amd64
         # Apple Silicon local dev, Hetzner CAX (ARM), AWS Graviton → arm64
         # Override via .env.production: PB_ARCH=arm64
         PB_ARCH: ${PB_ARCH:-amd64}
-    container_name: ${COMPOSE_PROJECT_NAME:-greenleaf}-cms
+    container_name: ${COMPOSE_PROJECT_NAME:-greenleaf}-backend
     restart: unless-stopped
     ports:
       # Host bind:port → container 3001. Default: 127.0.0.1:3052 (avoids conflicts with other apps on the VPS).
-      - "${CMS_BIND:-127.0.0.1}:${CMS_PORT:-3052}:3001"
+      - "${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-3052}:3001"
     environment:
       # Optional encryption key (32-char hex). Required in production.
       PB_ENCRYPTION_ENV: PB_ENCRYPTION_KEY
     env_file: .env.production
     volumes:
-      - cms-db:/pb/pb_data
+      - backend-db:/pb/pb_data
     networks:
       - greenleaf
 
@@ -54,16 +54,16 @@ services:
     environment:
       # Server-side only: internal Docker network URL for SSR + Nitro.
       # The browser never sees this (it's not in runtimeConfig.public).
-      NUXT_PAYLOAD_URL: http://cms:3001
+      NUXT_PAYLOAD_URL: http://backend:3001
     env_file: .env.production
     depends_on:
-      - cms
+      - backend
     networks:
       - greenleaf
 
   admin:
     build:
-      context: ./admin
+      context: ./cms
       args:
         VITE_PB_URL: ${NUXT_PUBLIC_PAYLOAD_URL:-http://localhost:3052}
     container_name: ${COMPOSE_PROJECT_NAME:-greenleaf}-admin
@@ -71,7 +71,7 @@ services:
     ports:
       - "${ADMIN_BIND:-127.0.0.1}:${ADMIN_PORT:-3053}:80"
     depends_on:
-      - cms
+      - backend
     networks:
       - greenleaf
 
@@ -92,7 +92,7 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - ./nginx/logs:/var/log/nginx
     depends_on:
-      - cms
+      - backend
       - nuxt
     networks:
       - greenleaf
@@ -102,4 +102,4 @@ networks:
     driver: bridge
 
 volumes:
-  cms-db:
+  backend-db:

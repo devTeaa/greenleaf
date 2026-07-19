@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "sync:types": "cp ../cms/src/payload-types.ts ./app/types/payload.ts"
+    "sync:types": "cp ../backend/src/payload-types.ts ./app/types/payload.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.117",

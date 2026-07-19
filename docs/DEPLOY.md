@@ -1,7 +1,7 @@
 # VPS deploy — step by step
 
 Assumes: fresh Ubuntu/Debian VPS, you have root/sudo, DNS A records for
-`greenleaf.example` + `cms.greenleaf.example` already point to the VPS IP.
+`greenleaf.example` + `greenleaf-backend.example` already point to the VPS IP.
 Replace `greenleaf.example` with your actual domain throughout.
 
 ## 1. Install prerequisites (one-time)
@@ -39,8 +39,8 @@ pnpm setup
 ```
 
 Pick **shared mode**, ports `3051` (Nuxt) + `3052` (Pocketbase),
-domain `greenleaf.example`, CMS subdomain `cms.greenleaf.example`. The CLI
-writes `.env.production` + `greenleaf.config.json` + `cms/.env` automatically.
+domain `greenleaf.example`, backend subdomain `greenleaf-backend.example`. The CLI
+writes `.env.production` + `greenleaf.config.json` + `backend/.env` automatically.
 
 > Tip: if you already configured these locally, you can `scp` your local
 > `.env.production` + `greenleaf.config.json` to the VPS instead of re-running
@@ -48,7 +48,7 @@ writes `.env.production` + `greenleaf.config.json` + `cms/.env` automatically.
 > ```bash
 > # from your Mac
 > scp .env.production greenleaf.config.json root@VPS_IP:~/greenleaf/
-> scp cms/.env root@VPS_IP:~/greenleaf/cms/
+> scp backend/.env root@VPS_IP:~/greenleaf/backend/
 > ```
 
 ## 4. Build the storefront (Nuxt SSR bundle)
@@ -67,7 +67,7 @@ docker compose up -d --build
 
 Verify:
 ```bash
-docker compose ps                          # both cms + nuxt should be "Up"
+docker compose ps                          # backend + nuxt should be "Up"
 curl http://127.0.0.1:3052/api/health      # → {"message":"API is healthy."}
 curl -I http://127.0.0.1:3051/             # → HTTP/1.1 200
 ```
@@ -76,12 +76,12 @@ curl -I http://127.0.0.1:3051/             # → HTTP/1.1 200
 
 ```bash
 # Create admin user (uses creds from .env.production)
-docker exec greenleaf-cms /pb/pocketbase superuser create \
+docker exec greenleaf-backend /pb/pocketbase superuser create \
   "$(grep POCKETBASE_ADMIN_EMAIL .env.production | cut -d= -f2)" \
   "$(grep POCKETBASE_ADMIN_PASSWORD .env.production | cut -d= -f2)"
 
 # Create collections + seed mock data
-cd cms && pnpm install && pnpm setup && pnpm seed && cd ..
+cd backend && pnpm install && pnpm setup && pnpm seed && cd ..
 
 # Push brand values (site name, WhatsApp #, social, etc.) into Pocketbase
 pnpm apply-brand
@@ -109,7 +109,7 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx --expand \
   -d greenleaf.example \
-  -d cms.greenleaf.example
+  -d greenleaf-backend.example
 ```
 
 Certbot will rewrite the Nginx config to add the SSL lines + HTTP→HTTPS redirect.
@@ -122,14 +122,14 @@ sudo nginx -t && sudo systemctl reload nginx
 
 Visit:
 - **https://greenleaf.example** → storefront with hero, products, etc.
-- **https://cms.greenleaf.example** → 301 redirect to `/_/` (admin login)
+- **https://greenleaf-backend.example** → 301 redirect to `/_/` (admin login)
 - Log in with `POCKETBASE_ADMIN_EMAIL` + `POCKETBASE_ADMIN_PASSWORD` from `.env.production`
 
 ## Common operations after deploy
 
 ```bash
 docker compose logs -f nuxt         # tail storefront logs
-docker compose logs -f cms          # tail Pocketbase logs
+docker compose logs -f backend     # tail Pocketbase logs
 docker compose restart nuxt         # restart after env change
 docker compose pull && docker compose up -d  # update after git pull
 docker compose down                 # stop everything
@@ -144,5 +144,5 @@ cd web && pnpm install && pnpm build && cd ..
 docker compose up -d --build
 ```
 
-Pocketbase data (SQLite + uploads) persists in the `cms-db` Docker volume —
+Pocketbase data (SQLite + uploads) persists in the `backend-db` Docker volume —
 safe across restarts, redeploys, and `docker compose down`.

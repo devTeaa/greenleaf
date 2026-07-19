@@ -1,19 +1,14 @@
-FROM alpine:3.20
+FROM node:24-alpine AS builder
+WORKDIR /app
+RUN corepack enable
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+COPY . .
+ARG VITE_PB_URL
+ENV VITE_PB_URL=$VITE_PB_URL
+RUN pnpm build
 
-# Pocketbase is a single static Go binary — no runtime deps, no Node, no build step.
-# We just download the binary and run it.
-
-ARG PB_VERSION=0.39.7
-ARG PB_ARCH=amd64
-
-RUN apk add --no-cache unzip ca-certificates tzdata \
- && wget -O /tmp/pb.zip "https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_${PB_ARCH}.zip" \
- && unzip /tmp/pb.zip -d /pb \
- && rm /tmp/pb.zip \
- && chmod +x /pb/pocketbase
-
-EXPOSE 3001
-
-# Bind to all interfaces so the docker network can reach it.
-# PB serves the admin UI at /_/ and REST API at /api/.
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:3001", "--origins=*"]
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
